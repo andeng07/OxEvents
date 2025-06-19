@@ -1,6 +1,8 @@
 package me.centauri07.ox.event;
 
+import me.centauri07.ox.config.MessagesConfiguration;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -22,14 +24,20 @@ public abstract class OxEvent {
         this.phases = phases;
     }
 
-    public final void sendEventMessage(Component component) {
-        players.forEach(eventPlayer -> {
-                Player retrievedPlayer = Bukkit.getPlayer(eventPlayer.getUniqueId());
+    public final void sendEventMessage(String message) {
+        Component prefix = MiniMessage.miniMessage()
+                .deserialize(MessagesConfiguration.prefix.replace("%event_name%", options.type().requestName));
 
-                if (retrievedPlayer != null) {
-                    retrievedPlayer.sendMessage(component);
+        players.forEach(eventPlayer -> {
+                    Player retrievedPlayer = Bukkit.getPlayer(eventPlayer.getUniqueId());
+
+                    String messageParsed = message // TODO: add all placeholder
+                            .replace("%player_name%", eventPlayer.asPlayer().getName());
+
+                    if (retrievedPlayer != null) {
+                        retrievedPlayer.sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
+                    }
                 }
-            }
         );
     }
 
