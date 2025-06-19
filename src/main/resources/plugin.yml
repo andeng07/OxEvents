@@ -1,0 +1,5 @@
+name: OxEventsPlugin
+version: 1.0.0
+main: me.centauri07.ox.OxEventsPlugin
+author: Centauri07
+api-version: '1.21.4'
