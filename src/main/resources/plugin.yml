@@ -3,3 +3,5 @@ version: 1.0.0
 main: me.centauri07.ox.OxEventsPlugin
 author: Centauri07
 api-version: '1.21.4'
+libraries:
+  - net.kyori:adventure-text-minimessage:4.22.0
