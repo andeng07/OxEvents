@@ -38,7 +38,7 @@ public abstract class EventPhase implements EventListener {
         end();
     }
 
-    protected abstract void start();
+    protected void start() { }
 
-    protected abstract void end();
+    protected void end() { }
 }
