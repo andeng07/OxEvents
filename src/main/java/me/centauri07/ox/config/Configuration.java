@@ -34,9 +34,9 @@ public abstract class Configuration {
             throw new RuntimeException(e);
         }
 
-        setup(configuration);
+        setup();
     }
 
-    protected abstract void setup(YamlConfiguration configuration);
+    protected abstract void setup();
 
 }
