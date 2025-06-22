@@ -74,6 +74,15 @@ public abstract class OxEvent {
         return true;
     }
 
+    public final EventPlayer getEventPlayer(Player player) {
+        return players.stream().filter(eventPlayer -> eventPlayer.getUniqueId() == player.getUniqueId())
+                .findFirst().orElse(null);
+    }
+
+    public final List<EventPlayer> getEventPlayers() {
+        return players;
+    }
+
     public final boolean isPlayer(Player player) {
         return players.stream().anyMatch(eventPlayer -> eventPlayer.getUniqueId() == player.getUniqueId());
     }
