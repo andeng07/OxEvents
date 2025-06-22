@@ -17,13 +17,12 @@ public abstract class OxEvent {
 
     private final List<EventPlayer> players = new ArrayList<>();
 
-    private final List<EventPhase> phases;
+    private List<EventPhase> phases;
 
     protected EventPhase currentPhase = null;
 
-    public OxEvent(Options options, List<EventPhase> phases) {
+    public OxEvent(Options options) {
         this.options = options;
-        this.phases = phases;
     }
 
     public final void sendEventMessage(String message) {
@@ -90,7 +89,7 @@ public abstract class OxEvent {
             if (currentIndex >= 0 && currentIndex + 1 < phases.size()) {
                 currentPhase = phases.get(currentIndex + 1);
             } else {
-                currentPhase = null; // or handle end-of-phases
+                terminate();
                 return;
             }
         } else {
@@ -101,6 +100,24 @@ public abstract class OxEvent {
             currentPhase.initialize();
         }
     }
+
+    public final void terminate() {
+        players.clear();
+        phases.clear();
+        currentPhase = null;
+
+        end();
+
+        OxEvent.currentEvent = null;
+    }
+
+    protected final void setEventPhases(List<EventPhase> eventPhases) {
+        if (phases == null) return;
+
+        phases = List.copyOf(eventPhases);
+    }
+
+    public abstract void end();
 
     public enum Type {
         TRIVIA("ox", "Ox Event"),
