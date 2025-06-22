@@ -1,0 +1,56 @@
+prefix: "<gray>[<aqua>Event</aqua>]<gray> "
+
+event:
+  # Countdown before the event starts (%seconds%)
+  start-countdown: "<gold>The event starts in <yellow>%seconds%</yellow> seconds!</gold>"
+
+  # Message when event is full and a player tries to join
+  full: "<red>The event is full!</red>"
+
+  # Message when a player tries to join but the event has already started
+  already-started: "<red>You can't join, the event has already started.</red>"
+
+  # Confirmation message for successful join
+  join: "<green>You have joined the event!</green>"
+
+  # Broadcast message when event officially starts
+  start: "<gold>The event has now started!</gold>"
+
+  # Message when a player tries to join but is already participating in the event
+  already-in-event: "<red>You are already in the event!</red>"
+
+  # Message sent to a player who got eliminated from the event
+  eliminated: "<dark_red>You have been eliminated.</dark_red>"
+
+  # Message sent to the player(s) who won the event (%winners%)
+  win: "<gold>Congratulations! <yellow>%winners%</yellow> won the event!</gold>"
+
+ox:
+  prompt:
+    multiple-choice:
+      # Format for the multiple choice question line (%question%)
+      question-format: "<yellow>Question:</yellow> <white>%question%</white>"
+
+      # Format for each multiple choice option (%option_letter%, %option_text%)
+      option-format: "<aqua>%option_letter%)</aqua> <white>%option_text%</white>"
+
+    true-false:
+      # Format for true/false question line (%question%)
+      question-format: "<yellow>True or False:</yellow> <white>%question%</white>"
+
+      # Format for each option line (%option_letter%, %option_text%)
+      option-format: "<aqua>%option_letter%)</aqua> <white>%option_text%</white>"
+
+    identification:
+      # Format for identification/open-ended question (%question%)
+      question-format: "<yellow>Question:</yellow> <white>%question%</white>"
+
+  # Message sent when a player tries to answer but is already eliminated
+  already-eliminated: "<dark_red>You have already been eliminated from this round.</dark_red>"
+
+  answer-reveal:
+    # Countdown before revealing the answer (%seconds%)
+    countdown: "<aqua>Revealing the answer in <gold>%seconds%</gold>...</aqua>"
+
+    # The message revealing the correct answer (%answer%)
+    message: "<green>The correct answer is <gold>%answer%</gold>.</green>"
