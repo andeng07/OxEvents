@@ -42,8 +42,29 @@ public abstract class OxEvent {
     }
 
     public final boolean addPlayer(Player player) {
-        if (players.size() >= options.playerLimit()) return false;
-        if (isPlayer(player)) return false;
+        if (!(currentPhase instanceof WaitingPhase)) {
+            String message = MessagesConfiguration.eventAlreadyStartedMessage.replace("%player%", player.getName());
+
+            player.sendMessage(MiniMessage.miniMessage().deserialize(message));
+
+            return false;
+        }
+
+        if (players.size() >= options.playerLimit()) {
+            String message = MessagesConfiguration.eventFullMessage.replace("%player%", player.getName());
+
+            player.sendMessage(MiniMessage.miniMessage().deserialize(message));
+
+            return false;
+        }
+
+        if (isPlayer(player)) {
+            String message = MessagesConfiguration.playerAlreadyInEventMessage.replace("%player%", player.getName());
+
+            player.sendMessage(MiniMessage.miniMessage().deserialize(message));
+
+            return false;
+        }
 
         EventPlayer eventPlayer = new EventPlayer(player.getUniqueId(), EventPlayer.State.ALIVE);
 
