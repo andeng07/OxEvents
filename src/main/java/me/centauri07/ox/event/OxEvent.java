@@ -11,6 +11,8 @@ import java.util.List;
 
 public abstract class OxEvent {
 
+    public static OxEvent currentEvent = null;
+
     public final Options options;
 
     private final List<EventPlayer> players = new ArrayList<>();
