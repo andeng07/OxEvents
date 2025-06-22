@@ -10,20 +10,13 @@ import java.util.List;
 
 public abstract class EventPhase implements EventListener {
 
-    private final JavaPlugin plugin;
-    private final OxEvent oxEvent;
-    private final List<EventPhaseListener> listeners;
-
-    public EventPhase(JavaPlugin plugin, OxEvent oxEvent, List<EventPhaseListener> listeners) {
-        this.plugin = plugin;
-        this.oxEvent = oxEvent;
-        this.listeners = listeners;
-    }
+    protected final JavaPlugin plugin;
+    private List<EventPhaseListener> listeners = Collections.emptyList();
+    protected final OxEvent oxEvent;
 
     public EventPhase(JavaPlugin plugin, OxEvent oxEvent) {
         this.plugin = plugin;
         this.oxEvent = oxEvent;
-        this.listeners = Collections.emptyList();
     }
 
     public final void initialize() {
@@ -36,6 +29,12 @@ public abstract class EventPhase implements EventListener {
         listeners.forEach(HandlerList::unregisterAll);
 
         end();
+    }
+
+    protected final void setListeners(List<EventPhaseListener> listeners) {
+        if (!this.listeners.isEmpty()) return;
+
+        this.listeners = listeners;
     }
 
     protected void start() { }
