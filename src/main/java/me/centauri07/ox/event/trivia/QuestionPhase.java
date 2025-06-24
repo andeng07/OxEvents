@@ -24,6 +24,8 @@ public class QuestionPhase extends EventPhase {
 
     @Override
     protected void start() {
+        oxEvent.sendEventMessage(MessagesConfiguration.oxStartMessage);
+
         nextQuestion();
     }
 
