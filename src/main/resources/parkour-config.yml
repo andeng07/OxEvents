@@ -1,0 +1,39 @@
+parkour:
+  # The time limit for the parkour event
+  time-limit: 300
+
+  # Location where the player is teleported when the parkour event starts.
+  location:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
+
+  # Where the player will be teleported after the parkour event ends.
+  return:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
+
+  # Exact location where the player starts the parkour.
+  start:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
+
+  # Exact location where the parkour ends; reaching this means completion.
+  end:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
