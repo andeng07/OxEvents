@@ -9,7 +9,7 @@ public class WaitingPhase extends EventPhase {
     private final Countdown countdown;
 
     public WaitingPhase(JavaPlugin plugin, OxEvent oxEvent) {
-        super(plugin, oxEvent); // TODO Event
+        super(plugin, oxEvent);
 
         countdown = new Countdown(plugin, oxEvent.options.waitingTime(), count -> {
 
