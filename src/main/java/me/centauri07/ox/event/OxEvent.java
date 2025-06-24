@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class OxEvent {
@@ -32,7 +33,7 @@ public abstract class OxEvent {
         players.forEach(eventPlayer -> {
                     Player retrievedPlayer = Bukkit.getPlayer(eventPlayer.getUniqueId());
 
-                    String messageParsed = message // TODO: add all placeholder
+                    String messageParsed = message
                             .replace("%player_name%", eventPlayer.asPlayer().getName());
 
                     if (retrievedPlayer != null) {
@@ -126,7 +127,14 @@ public abstract class OxEvent {
         phases = List.copyOf(eventPhases);
     }
 
-    public abstract void end();
+    protected final void setEventPhases(EventPhase... eventPhases) {
+        if (phases == null) return;
+
+        phases = Arrays.stream(eventPhases).toList();
+    }
+
+    public void start() { }
+    public void end() { }
 
     public enum Type {
         TRIVIA("ox", "Ox Event"),
