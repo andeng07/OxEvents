@@ -1,88 +1,110 @@
-prefix: "<gray>[<aqua>Event</aqua>]<gray> "
+# Prefix applied to all messages sent by the event system
+# Minimal and elegant design for premium feel
+prefix: "<gray>❘</gray> <aqua>Event</aqua> <gray>❘</gray> "
 
 event:
-  # Countdown before the event starts (%seconds%)
-  start-countdown: "<gold>The event starts in <yellow>%seconds%</yellow> seconds!</gold>"
+  # Sent as a countdown before the event officially begins
+  # %seconds% = number of seconds remaining
+  start-countdown: "<gold>Event starts in <white>%seconds%s</white>. Prepare yourself.</gold>"
 
-  # Message for remaining time during the event (%time%)
-  time-remaining: "<aqua><bold>%time%</bold> remaining in the event!</aqua>"
+  # Periodic message showing how much time is left in the event
+  # %time% = remaining time in minutes/seconds
+  time-remaining: "<gray>Time remaining:</gray> <white>%time%</white>"
 
-  # Message when event is full and a player tries to join
-  full: "<red>The event is full!</red>"
+  # Shown when a player tries to participate in an event that has reached its participant limit
+  full: "<red>The event is full. Please wait for the next one.</red>"
 
-  # Message when a player tries to join but the event has already started
-  already-started: "<red>You can't join, the event has already started.</red>"
+  # Displayed if a player attempts to participate after the event has started
+  already-started: "<red>Registration closed. The event is already in progress.</red>"
 
-  # Confirmation message for successful join
-  join: "<green>You have joined the event!</green>"
+  # Confirmation message when a player successfully participates
+  join: "<aqua>Welcome aboard. You’re now participating.</aqua>"
 
-  # Message when a player tries to join but is already participating in the event
-  already-in-event: "<red>You are already in the event!</red>"
+  # Shown if a player tries to participate again while already in the event
+  already-in: "<gray>You are already participating in this event.</gray>"
 
-  # Message sent to a player who got eliminated from the event
-  eliminated: "<dark_red>You have been eliminated.</dark_red>"
+  # Message sent when a player is eliminated from the event
+  eliminated: "<dark_red>You've been eliminated. Better luck next time.</dark_red>"
 
-  # Message sent to the player(s) who won the event (%winners%)
-  win: "<gold>Congratulations! <yellow>%winners%</yellow> won the event!</gold>"
+  # Victory message when the event ends and one or more players win
+  # %winners% = player name(s) of the winners
+  win: "<gold>Victory!</gold> <gray>—</gray> <white>Congratulations to %winners%.</white>"
 
 ox:
-  # Start message that gives players context and instructions when the ox event begins
+  # Introduction message when the Trivia Event starts
+  # Gives players context and sets a serious tone
   start-message: |
-    <green>Welcome to the Trivia Event!</green>
-    <gray>Answer each question before time runs out.</gray>
-    <gold>Be quick, be correct—last player standing wins!</gold>
+    <gold>Welcome to the Trivia Arena.</gold>
+    <gray>Each question sharpens the competition.</gray>
+    <white>Only the sharpest will prevail.</white>
 
-  #
-  answer: "<white>You answered <aqua>%answer%</aqua> for this round"
+  # Feedback when a player submits their answer for the current round
+  # %answer% = the selected answer text
+  answer: "<gray>Your answer:</gray> <aqua>%answer%</aqua>"
 
-  already-answered: "<red>You already answered for this round"
+  # Message shown if a player tries to answer again in the same round
+  already-answered: "<red>You’ve already answered this round.</red>"
 
-  eliminate: "<red>You have been eliminated from the event"
+  # Elimination message specific to Trivia/OX
+  eliminate: "<dark_red>You’ve been eliminated from the event.</dark_red>"
+
+  # Sent if a previously eliminated player attempts to answer
+  already-eliminated: "<gray>You are no longer active this round.</gray>"
 
   prompt:
     multiple-choice:
-      # Format for the multiple choice question line (%question%)
-      question-format: "<yellow>Question:</yellow> <white>%question%</white>"
+      # Main question line for multiple choice rounds
+      # %question% = the trivia question
+      question-format: "<white>Question:</white> <gray>%question%</gray>"
 
-      # Format for each multiple choice option (%option_letter%, %option_text%)
+      # Format for each answer choice (e.g., A) Option)
+      # %option_letter% = A/B/C/D, %option_text% = choice text
       option-format: "<aqua>%option_letter%)</aqua> <white>%option_text%</white>"
 
     true-false:
-      # Format for true/false question line (%question%)
-      question-format: "<yellow>True or False:</yellow> <white>%question%</white>"
+      # Question prompt line for true/false style questions
+      question-format: "<white>True or False:</white> <gray>%question%</gray>"
 
+      # Format for showing either True or False
+      # %option_text% = "True" or "False"
       option-format: "<aqua>%option_text%</aqua>"
 
     identification:
-      # Format for identification/open-ended question (%question%)
-      question-format: "<yellow>Question:</yellow> <white>%question%</white>"
+      # Question prompt for open-ended (typed) responses
+      # %question% = the trivia question
+      question-format: "<white>Question:</white> <gray>%question%</gray>"
 
-  # Message sent when a player tries to answer but is already eliminated
-  already-eliminated: "<dark_red>You have already been eliminated from this round.</dark_red>"
 
   answer-reveal:
-    # Countdown before revealing the answer (%seconds%)
-    countdown: "<aqua>Revealing the answer in <gold>%seconds%</gold>...</aqua>"
+    # Countdown message before revealing the correct answer
+    # %seconds% = seconds before reveal
+    countdown: "<gray>Revealing answer in <gold>%seconds%</gold>...</gray>"
 
-    # Message shown after each round. Includes the correct answer, number of players who got it right, got it wrong, and are still alive.
+    # Summary of each round’s outcome after answer is revealed
+    # %answer% = correct answer, %correct%/%wrong%/%alive% = player counts
     message: |
-      <green>The correct answer is <gold>%answer%</gold>.</green>
-      <green>%correct% player(s) correct</green>
-      <red>%wrong% player(s) wrong</red>
-      <yellow>%alive% player(s) still alive</yellow>
+      <white>Correct answer:</white> <gold>%answer%</gold>
+      <green>%correct% answered correctly</green>
+      <red>%wrong% answered incorrectly</red>
+      <aqua>%alive% remain</aqua>
 
 parkour:
-  # Start message that gives players context and instructions when the parkour event begins
+  # Introduction message when Parkour Event starts
+  # Highlights competition, clarity, and tone
   start-message: |
-    <green>Welcome to the Trivia Event!</green>
-    <gray>Answer each question before time runs out.</gray>
-    <gold>Be quick, be correct—last player standing wins!</gold>
+    <gold>Welcome to the Parkour Challenge.</gold>
+    <gray>Precision and speed will carry you through.</gray>
+    <white>Only the fastest will triumph.</white>
 
-  # Message sent when a player completes the parkour
-  completed: "<aqua>%player%</aqua> has finished the course! (<green>%current%/%required%</green>)"
+  # Message shown when a player starts their course run
+  start-course: "<aqua>Your run begins now. Good luck!</aqua>"
 
-  # Message sent when a player tries to start but already has
-  already-started: "<red>You already started the parkour. Head to the finish line!</red>"
+  # Message shown when a player completes the course
+  # %player% = player name, %current% = current finishers, %required% = needed to end
+  completed: "<white>%player%</white> <gray>completed the course</gray> (<green>%current%</green>/<yellow>%required%</yellow>)"
 
-  # Message sent when the player reaches the end without starting
-  invalid-finish-attempt: "<red>You haven't started the parkour yet! Go to the start first.</red>"
+  # Warning when a player who already started tries to start again
+  already-started: "<gray>You’ve already started. Finish the course first.</gray>"
+
+  # Message when a player tries to finish without first starting
+  invalid-finish-attempt: "<red>You must start before finishing.</red>"
