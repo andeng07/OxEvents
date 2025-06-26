@@ -64,6 +64,11 @@ public class EventCommand implements CommandExecutor {
                     return true;
                 }
 
+                if (OxEvent.currentEvent != null) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>An event is currently in progress!"));
+                    return true;
+                }
+
                 Optional<OxEvent.Type> type = Arrays.stream(OxEvent.Type.values()).filter(eventType -> Objects.equals(eventType.id, args[1])).findFirst();
 
                 if (type.isEmpty()) {
