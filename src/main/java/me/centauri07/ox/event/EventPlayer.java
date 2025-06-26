@@ -13,6 +13,7 @@ public class EventPlayer {
 
     public EventPlayer(UUID uniqueId, State state) {
         this.uniqueId = uniqueId;
+        this.state = state;
     }
 
     public State getState() {
