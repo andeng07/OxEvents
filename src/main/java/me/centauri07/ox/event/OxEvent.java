@@ -3,12 +3,12 @@ package me.centauri07.ox.event;
 import me.centauri07.ox.config.MessagesConfiguration;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class OxEvent {
 
@@ -31,20 +31,18 @@ public abstract class OxEvent {
                 .deserialize(MessagesConfiguration.prefix.replace("%event_name%", options.type().requestName));
 
         players.forEach(eventPlayer -> {
-                    Player retrievedPlayer = Bukkit.getPlayer(eventPlayer.getUniqueId());
 
                     String messageParsed = message
                             .replace("%player_name%", eventPlayer.asPlayer().getName());
 
-                    if (retrievedPlayer != null) {
-                        retrievedPlayer.sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
-                    }
+                    eventPlayer.asPlayer().sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
+
                 }
         );
     }
 
     public final boolean addPlayer(Player player) {
-        if (!(currentPhase instanceof WaitingPhase)) {
+        if (!canJoin()) {
             String message = MessagesConfiguration.eventAlreadyStartedMessage.replace("%player%", player.getName());
 
             player.sendMessage(MiniMessage.miniMessage().deserialize(message));
@@ -72,11 +70,19 @@ public abstract class OxEvent {
 
         players.add(eventPlayer);
 
+        sendEventMessage(MessagesConfiguration.eventJoinMessage);
+
         return true;
     }
 
     public final EventPlayer getEventPlayer(Player player) {
         return players.stream().filter(eventPlayer -> eventPlayer.getUniqueId() == player.getUniqueId())
+                .findFirst().orElse(null);
+    }
+
+
+    public final EventPlayer getEventPlayer(UUID player) {
+        return players.stream().filter(eventPlayer -> eventPlayer.getUniqueId() == player)
                 .findFirst().orElse(null);
     }
 
@@ -113,7 +119,7 @@ public abstract class OxEvent {
 
     public final void terminate() {
         players.clear();
-        phases.clear();
+        phases = null;
         currentPhase = null;
 
         end();
@@ -121,9 +127,11 @@ public abstract class OxEvent {
         OxEvent.currentEvent = null;
     }
 
-    protected final void setEventPhases(List<EventPhase> eventPhases) {
-        if (phases == null) return;
+    public boolean canJoin() {
+        return currentPhase instanceof WaitingPhase;
+    }
 
+    protected final void setEventPhases(List<EventPhase> eventPhases) {
         phases = List.copyOf(eventPhases);
     }
 

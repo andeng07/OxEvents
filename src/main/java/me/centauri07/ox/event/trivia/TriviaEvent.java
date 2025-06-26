@@ -12,17 +12,13 @@ import java.util.List;
 public class TriviaEvent extends OxEvent {
 
     private EventPlayer winner;
-    private final TriviaEventSettings settings;
 
     public TriviaEvent(JavaPlugin plugin, Options options, TriviaEventSettings settings) {
         super(options);
 
-        this.settings = settings;
-
         setEventPhases(List.of(
                 new WaitingPhase(plugin, this),
-                new QuestionPhase(plugin, this, List.copyOf(settings.questionRounds()))
-
+                new QuestionPhase(plugin, this, settings.questions())
         ));
     }
 
@@ -44,7 +40,7 @@ public class TriviaEvent extends OxEvent {
     }
 
     private void rewardWinner(EventPlayer eventPlayer) {
-        settings.reward().apply(eventPlayer.asPlayer());
+        // settings.reward().apply(eventPlayer.asPlayer());
     }
 
     @Override

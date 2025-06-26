@@ -5,3 +5,6 @@ author: Centauri07
 api-version: '1.21.4'
 libraries:
   - net.kyori:adventure-text-minimessage:4.22.0
+commands:
+  event:
+    description: Ox, Parkour, Hidden Blocks Event

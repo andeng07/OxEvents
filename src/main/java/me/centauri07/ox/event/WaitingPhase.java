@@ -13,8 +13,8 @@ public class WaitingPhase extends EventPhase {
 
         countdown = new Countdown(plugin, oxEvent.options.waitingTime(), count -> {
 
-            if (count % 10 == 0 && count < 5) {
-                oxEvent.sendEventMessage(MessagesConfiguration.eventStartCountdownMessage);
+            if (count % 10 == 0 || count < 5) {
+                oxEvent.sendEventMessage(MessagesConfiguration.eventStartCountdownMessage.replace("%seconds%", count + ""));
             }
 
         }, oxEvent::nextPhase);
