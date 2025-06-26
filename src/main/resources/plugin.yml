@@ -8,3 +8,4 @@ libraries:
 commands:
   event:
     description: Ox, Parkour, Hidden Blocks Event
+    usage: /event <start|join> <type> <player_limit> <waiting_time>
