@@ -5,6 +5,7 @@ import me.centauri07.ox.event.EventPhase;
 import me.centauri07.ox.event.EventPlayer;
 import me.centauri07.ox.utility.Countdown;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class QuestionPhase extends EventPhase {
                 .filter(player -> player.getState() == EventPlayer.State.ALIVE)
                 .toList();
 
-        if (isLastQuestion() || alivePlayers.size() <= 1) {
+        if (isLastQuestion() /*|| alivePlayers.size() <= 1*/) {
             triviaEvent.setWinner(alivePlayers.isEmpty() ? null : alivePlayers.getFirst());
             oxEvent.nextPhase();
             return;
@@ -76,7 +77,7 @@ public class QuestionPhase extends EventPhase {
                 plugin,
                 currentQuestion.getQuestion().duration(),
                 count -> {
-                    if (count % 10 == 0 || count < 5) {
+                    if (count == currentQuestion.getQuestion().duration() || count % 10 == 0 || count <= 5) {
                         String message = MessagesConfiguration.oxAnswerRevealCountdownMessage
                                 .replace("%seconds%", String.valueOf(count));
                         oxEvent.sendEventMessage(message);
@@ -90,17 +91,22 @@ public class QuestionPhase extends EventPhase {
 
     private void eliminatePlayers() {
         for (Map.Entry<UUID, Boolean> entry : currentQuestion.getParticipants().entrySet()) {
-            EventPlayer player = oxEvent.getEventPlayer(entry.getKey());
+            EventPlayer eventPlayer = oxEvent.getEventPlayer(entry.getKey());
 
-            if (player == null) continue;
+            if (eventPlayer == null) continue;
 
-            if (!currentQuestion.hasAnswered(player)) {
-                player.setState(EventPlayer.State.ELIMINATED);
+            if (!currentQuestion.hasAnswered(eventPlayer)) {
+                eventPlayer.setState(EventPlayer.State.ELIMINATED);
+            }
+
+            if (eventPlayer.getState() == EventPlayer.State.ELIMINATED) {
+                Player player = eventPlayer.asPlayer();
+
+                if (player == null) return;
+
+                player.sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.eliminateMessage));
             }
         }
-
-        oxEvent.getEventPlayers().stream().filter(eventPlayer -> eventPlayer.getState() == EventPlayer.State.ELIMINATED)
-                .forEach(eventPlayer -> eventPlayer.asPlayer().sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.eliminateMessage)));
     }
 
     private void onCountdownFinish() {
@@ -113,7 +119,7 @@ public class QuestionPhase extends EventPhase {
                 .replace("%answer%", currentQuestion.getQuestion().answer())
                 .replace("%correct%", String.valueOf(correctCount))
                 .replace("%wrong%", String.valueOf(wrongCount))
-                .replace("%remaining%", String.valueOf(remainingCount));
+                .replace("%alive%", String.valueOf(remainingCount));
 
         oxEvent.sendEventMessage(message);
 

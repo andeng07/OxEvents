@@ -20,7 +20,7 @@ public class QuestionRound {
     public boolean hasAnswered(EventPlayer player) {
         Boolean value = participants.get(player.getUniqueId());
 
-        return (player.getState() == EventPlayer.State.ELIMINATED && Boolean.FALSE.equals(value)) ||
+        return (player.getState() == EventPlayer.State.ELIMINATED) ||
                 (player.getState() == EventPlayer.State.ALIVE && Boolean.TRUE.equals(value));
     }
 
@@ -30,7 +30,6 @@ public class QuestionRound {
 
     public boolean answer(EventPlayer player, String input) {
         UUID id = player.getUniqueId();
-        if (participants.containsKey(id)) return participants.get(id);
 
         boolean correct = question.isCorrect(input);
         participants.put(id, correct);

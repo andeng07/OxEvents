@@ -5,6 +5,7 @@ import me.centauri07.ox.event.EventPhase;
 import me.centauri07.ox.event.EventPlayer;
 import me.centauri07.ox.event.OxEvent;
 import me.centauri07.ox.utility.Countdown;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class ParkourPhase extends EventPhase {
 
         this.settings = settings;
 
+        setListeners(List.of(new ParkourPhaseListener(settings)));
+
         countdown = new Countdown(plugin, settings.timeLimit(),
                 (time) -> {
                     if (time % 10 == 0 && time < 5) {
@@ -34,8 +37,14 @@ public class ParkourPhase extends EventPhase {
 
     @Override
     protected void start() {
+        oxEvent.sendEventMessage(MessagesConfiguration.parkourStartMessage);
+
         oxEvent.getEventPlayers().forEach(eventPlayer -> {
-            eventPlayer.asPlayer().teleport(settings.parkourLocation().asBukkitLocation());
+            Player player = eventPlayer.asPlayer();
+
+            if (player != null) {
+                player.teleport(settings.parkourLocation().asBukkitLocation());
+            }
         });
 
         countdown.start();
@@ -43,8 +52,14 @@ public class ParkourPhase extends EventPhase {
 
     @Override
     protected void end() {
+        countdown.cancel();
+
         oxEvent.getEventPlayers().forEach(eventPlayer -> {
-            eventPlayer.asPlayer().teleport(settings.returnLocation().asBukkitLocation());
+            Player player = eventPlayer.asPlayer();
+
+            if (player != null) {
+                player.teleport(settings.returnLocation().asBukkitLocation());
+            }
         });
 
         started.clear();
@@ -54,7 +69,7 @@ public class ParkourPhase extends EventPhase {
     }
 
     public boolean isStarted(EventPlayer eventPlayer) {
-        return started.contains(eventPlayer.getUniqueId()) && eventPlayer.getState() == EventPlayer.State.ELIMINATED;
+        return started.contains(eventPlayer.getUniqueId()) || eventPlayer.getState() == EventPlayer.State.ELIMINATED;
     }
 
     public void startParkour(EventPlayer eventPlayer) {

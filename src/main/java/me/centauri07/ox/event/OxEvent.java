@@ -31,13 +31,15 @@ public abstract class OxEvent {
                 .deserialize(MessagesConfiguration.prefix.replace("%event_name%", options.type().requestName));
 
         players.forEach(eventPlayer -> {
+                Player player = eventPlayer.asPlayer();
 
+                if (player != null) {
                     String messageParsed = message
-                            .replace("%player_name%", eventPlayer.asPlayer().getName());
+                            .replace("%player_name%", player.getName());
 
-                    eventPlayer.asPlayer().sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
-
+                    player.sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
                 }
+            }
         );
     }
 
@@ -136,13 +138,12 @@ public abstract class OxEvent {
     }
 
     protected final void setEventPhases(EventPhase... eventPhases) {
-        if (phases == null) return;
-
         phases = Arrays.stream(eventPhases).toList();
     }
 
-    public void start() { }
-    public void end() { }
+    public void start() {}
+
+    public void end() {}
 
     public enum Type {
         TRIVIA("ox", "Ox Event"),

@@ -39,19 +39,9 @@ public class ParkourPhaseListener extends EventPhaseListener {
 
         if (eventPlayer == null) return;
 
-        if (block.getX() == settings.parkourStart().x() &&
-                block.getY() == settings.parkourStart().y() &&
-                block.getZ() == settings.parkourStart().z()) {
-
-            if (parkourPhase.isParkourFinished(eventPlayer)) {
-                String message = MessagesConfiguration.parkourCompletedMessage
-                        .replace("%current%", parkourPhase.getFinishers().size() + "")
-                        .replace("%required%", parkourEvent.settings.winnerCount() + "");
-
-                parkourEvent.sendEventMessage(message);
-
-                return;
-            }
+        if (block.getX() == (int) settings.parkourStart().x() &&
+                block.getY() == (int) settings.parkourStart().y() &&
+                block.getZ() == (int) settings.parkourStart().z()) {
 
             if (parkourPhase.isStarted(eventPlayer)) {
                 parkourEvent.sendEventMessage(MessagesConfiguration.parkourAlreadyStarted);
@@ -59,13 +49,15 @@ public class ParkourPhaseListener extends EventPhaseListener {
                 return;
             }
 
-            parkourEvent.sendEventMessage(MessagesConfiguration.parkourStartMessage);
+            parkourEvent.sendEventMessage(MessagesConfiguration.parkourStartCourseMessage);
             parkourPhase.startParkour(eventPlayer);
+
+            return;
         }
 
-        if (block.getX() == settings.parkourEnd().x() &&
-                block.getY() == settings.parkourEnd().y() &&
-                block.getZ() == settings.parkourEnd().z()) {
+        if (block.getX() == (int) settings.parkourEnd().x() &&
+                block.getY() == (int) settings.parkourEnd().y() &&
+                block.getZ() == (int) settings.parkourEnd().z()) {
 
             if (!parkourPhase.isStarted(eventPlayer)) {
                 parkourEvent.sendEventMessage(MessagesConfiguration.parkourInvalidFinishAttempt);
@@ -75,6 +67,11 @@ public class ParkourPhaseListener extends EventPhaseListener {
 
             parkourPhase.finishParkour(eventPlayer);
 
+            parkourEvent.sendEventMessage(MessagesConfiguration.parkourCompletedMessage
+                    .replace("%player%", event.getPlayer().getName())
+                    .replace("%current%", parkourPhase.getFinishers().size() + "")
+                    .replace("%required%", settings.winnerCount() + "")
+            );
         }
     }
 

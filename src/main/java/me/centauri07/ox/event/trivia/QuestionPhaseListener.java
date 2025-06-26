@@ -27,15 +27,24 @@ public class QuestionPhaseListener extends EventPhaseListener {
 
         if (!(triviaEvent.getCurrentPhase() instanceof QuestionPhase questionPhase)) return;
 
-        if (eventPlayer.getState() != EventPlayer.State.ELIMINATED) {
-            if (questionPhase.getCurrentQuestionRound().hasAnswered(eventPlayer)) {
+        if (eventPlayer.getState() == EventPlayer.State.ALIVE) {
+            if (!questionPhase.getCurrentQuestionRound().isParticipant(eventPlayer)) {
                 eventPlayer.asPlayer().sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.oxAlreadyEliminatedMessage));
+                event.setCancelled(true);
+
+                return;
+            }
+
+            if (questionPhase.getCurrentQuestionRound().hasAnswered(eventPlayer)) {
+                eventPlayer.asPlayer().sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.alreadyAnsweredMessage));
+                event.setCancelled(true);
+
                 return;
             }
 
             String message = MiniMessage.miniMessage().serialize(event.originalMessage());
 
-            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.alreadyAnsweredMessage.replace("%answer%", message)));
+            event.getPlayer().sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.answerMessage.replace("%answer%", message)));
 
             boolean answerResult = phase.getCurrentQuestionRound()
                     .answer(eventPlayer, MiniMessage.miniMessage().serialize(event.originalMessage()));

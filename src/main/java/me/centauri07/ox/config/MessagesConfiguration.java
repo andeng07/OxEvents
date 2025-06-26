@@ -2,43 +2,96 @@ package me.centauri07.ox.config;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Configuration class for loading all messages used by the event system.
+ * Messages are loaded from the "messages.yml" file.
+ *
+ * Messages include event countdowns, player notifications, trivia prompts,
+ * answer reveal messages, and parkour event messages.
+ */
 public class MessagesConfiguration extends Configuration {
 
-    // Global prefix for all messages
+    // Prefix applied to all messages sent by the event system (minimal, elegant)
     public static String prefix;
 
     // Event messages
+    /** Countdown before the event officially begins (%seconds%) */
     public static String eventStartCountdownMessage;
+
+    /** Periodic message showing how much time is left in the event (%time%) */
     public static String eventTimeRemainingMessage;
+
+    /** Shown when event participant limit is reached */
     public static String eventFullMessage;
+
+    /** Displayed if event already started and player tries to join */
     public static String eventAlreadyStartedMessage;
+
+    /** Confirmation message when player joins event successfully */
     public static String eventJoinMessage;
+
+    /** Shown if player tries to join but is already in the event */
     public static String playerAlreadyInEventMessage;
+
+    /** Message when a player is eliminated from the event */
     public static String playerEliminatedMessage;
+
+    /** Victory message when one or more players win (%winners%) */
     public static String playerWinMessage;
 
-    // OX (Trivia) messages
+    // Trivia (OX) messages
+    /** Introduction message when Trivia starts */
     public static String oxStartMessage;
+
+    /** Feedback when player submits an answer (%answer%) */
     public static String answerMessage;
+
+    /** Message if player tries to answer again in the same round */
     public static String alreadyAnsweredMessage;
+
+    /** Elimination message specific to Trivia/OX */
     public static String eliminateMessage;
 
     // Trivia prompt formats
+    /** Multiple choice question prompt (%question%) */
     public static String oxMultipleChoiceQuestionFormat;
+
+    /** Multiple choice option format (%option_letter%, %option_text%) */
     public static String oxMultipleChoiceOptionFormat;
+
+    /** True/False question prompt (%question%) */
     public static String oxTrueFalseQuestionFormat;
+
+    /** True/False option format (%option_text%) */
     public static String oxTrueFalseOptionFormat;
+
+    /** Identification (open-ended) question prompt (%question%) */
     public static String oxIdentificationQuestionFormat;
 
     // Trivia elimination and answer reveal
+    /** Message if eliminated player tries to answer again */
     public static String oxAlreadyEliminatedMessage;
+
+    /** Countdown before revealing the correct answer (%seconds%) */
     public static String oxAnswerRevealCountdownMessage;
+
+    /** Summary message after answer reveal (%answer%, %correct%, %wrong%, %alive%) */
     public static String oxAnswerRevealMessage;
 
     // Parkour messages
+    /** Introduction message when Parkour starts */
     public static String parkourStartMessage;
+
+    /** Message when player starts parkour course */
+    public static String parkourStartCourseMessage;
+
+    /** Message when player completes the course (%player%, %current%, %required%) */
     public static String parkourCompletedMessage;
+
+    /** Warning when player tries to start again */
     public static String parkourAlreadyStarted;
+
+    /** Message when player tries to finish without starting */
     public static String parkourInvalidFinishAttempt;
 
     public MessagesConfiguration(JavaPlugin plugin) {
@@ -55,7 +108,7 @@ public class MessagesConfiguration extends Configuration {
         eventFullMessage = configuration.getString("event.full");
         eventAlreadyStartedMessage = configuration.getString("event.already-started");
         eventJoinMessage = configuration.getString("event.join");
-        playerAlreadyInEventMessage = configuration.getString("event.already-in-event");
+        playerAlreadyInEventMessage = configuration.getString("event.already-in");
         playerEliminatedMessage = configuration.getString("event.eliminated");
         playerWinMessage = configuration.getString("event.win");
 
@@ -79,6 +132,7 @@ public class MessagesConfiguration extends Configuration {
 
         // Parkour messages
         parkourStartMessage = configuration.getString("parkour.start-message");
+        parkourStartCourseMessage = configuration.getString("parkour.start-course");
         parkourCompletedMessage = configuration.getString("parkour.completed");
         parkourAlreadyStarted = configuration.getString("parkour.already-started");
         parkourInvalidFinishAttempt = configuration.getString("parkour.invalid-finish-attempt");

@@ -7,8 +7,6 @@ import me.centauri07.ox.event.OxEvent;
 import me.centauri07.ox.event.WaitingPhase;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-
 public class TriviaEvent extends OxEvent {
 
     private EventPlayer winner;
@@ -16,21 +14,10 @@ public class TriviaEvent extends OxEvent {
     public TriviaEvent(JavaPlugin plugin, Options options, TriviaEventSettings settings) {
         super(options);
 
-        setEventPhases(List.of(
+        setEventPhases(
                 new WaitingPhase(plugin, this),
                 new QuestionPhase(plugin, this, settings.questions())
-        ));
-    }
-
-    public EventPlayer getWinner() {
-        if (winner != null) return winner;
-
-        List<EventPlayer> alivePlayers = getEventPlayers().stream()
-                .filter(eventPlayer -> eventPlayer.getState() == EventPlayer.State.ALIVE).toList();
-
-        if (alivePlayers.size() != 1) return null;
-
-        return alivePlayers.getFirst();
+        );
     }
 
     public void setWinner(EventPlayer eventPlayer) {
@@ -45,15 +32,11 @@ public class TriviaEvent extends OxEvent {
 
     @Override
     public void end() {
-        EventPlayer finalWinner = getWinner();
-
-        if (finalWinner == null ) {
-            throw new IllegalStateException("Events > Event ends with no winners");
+        if (winner != null) {
+            rewardWinner(winner);
         }
 
-        rewardWinner(finalWinner);
-
-        String winnerMessage = MessagesConfiguration.playerWinMessage.replace("%winners%", finalWinner.asPlayer().getName());
+        String winnerMessage = MessagesConfiguration.playerWinMessage.replace("%winners%", winner != null ? winner.asPlayer().getName() : "No one");
 
         sendEventMessage(winnerMessage);
 
