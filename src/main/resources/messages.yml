@@ -4,6 +4,9 @@ event:
   # Countdown before the event starts (%seconds%)
   start-countdown: "<gold>The event starts in <yellow>%seconds%</yellow> seconds!</gold>"
 
+  # Message for remaining time during the event (%time%)
+  time-remaining: "<aqua><bold>%time%</bold> remaining in the event!</aqua>"
+
   # Message when event is full and a player tries to join
   full: "<red>The event is full!</red>"
 
@@ -12,9 +15,6 @@ event:
 
   # Confirmation message for successful join
   join: "<green>You have joined the event!</green>"
-
-  # Broadcast message when event officially starts
-  start: "<gold>The event has now started!</gold>"
 
   # Message when a player tries to join but is already participating in the event
   already-in-event: "<red>You are already in the event!</red>"
@@ -26,6 +26,19 @@ event:
   win: "<gold>Congratulations! <yellow>%winners%</yellow> won the event!</gold>"
 
 ox:
+  # Start message that gives players context and instructions when the ox event begins
+  start-message: |
+    <green>Welcome to the Trivia Event!</green>
+    <gray>Answer each question before time runs out.</gray>
+    <gold>Be quick, be correct—last player standing wins!</gold>
+
+  #
+  answer: "<white>You answered <aqua>%answer%</aqua> for this round"
+
+  already-answered: "<red>You already answered for this round"
+
+  eliminate: "<red>You have been eliminated from the event"
+
   prompt:
     multiple-choice:
       # Format for the multiple choice question line (%question%)
@@ -38,8 +51,7 @@ ox:
       # Format for true/false question line (%question%)
       question-format: "<yellow>True or False:</yellow> <white>%question%</white>"
 
-      # Format for each option line (%option_letter%, %option_text%)
-      option-format: "<aqua>%option_letter%)</aqua> <white>%option_text%</white>"
+      option-format: "<aqua>%option_text%</aqua>"
 
     identification:
       # Format for identification/open-ended question (%question%)
@@ -52,5 +64,25 @@ ox:
     # Countdown before revealing the answer (%seconds%)
     countdown: "<aqua>Revealing the answer in <gold>%seconds%</gold>...</aqua>"
 
-    # The message revealing the correct answer (%answer%)
-    message: "<green>The correct answer is <gold>%answer%</gold>.</green>"
+    # Message shown after each round. Includes the correct answer, number of players who got it right, got it wrong, and are still alive.
+    message: |
+      <green>The correct answer is <gold>%answer%</gold>.</green>
+      <green>%correct% player(s) correct</green>
+      <red>%wrong% player(s) wrong</red>
+      <yellow>%alive% player(s) still alive</yellow>
+
+parkour:
+  # Start message that gives players context and instructions when the parkour event begins
+  start-message: |
+    <green>Welcome to the Trivia Event!</green>
+    <gray>Answer each question before time runs out.</gray>
+    <gold>Be quick, be correct—last player standing wins!</gold>
+
+  # Message sent when a player completes the parkour
+  completed: "<aqua>%player%</aqua> has finished the course! (<green>%current%/%required%</green>)"
+
+  # Message sent when a player tries to start but already has
+  already-started: "<red>You already started the parkour. Head to the finish line!</red>"
+
+  # Message sent when the player reaches the end without starting
+  invalid-finish-attempt: "<red>You haven't started the parkour yet! Go to the start first.</red>"
