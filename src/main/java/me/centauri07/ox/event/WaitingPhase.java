@@ -2,6 +2,9 @@ package me.centauri07.ox.event;
 
 import me.centauri07.ox.config.MessagesConfiguration;
 import me.centauri07.ox.utility.Countdown;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class WaitingPhase extends EventPhase {
@@ -13,8 +16,13 @@ public class WaitingPhase extends EventPhase {
 
         countdown = new Countdown(plugin, oxEvent.options.waitingTime(), count -> {
 
-            if (count == oxEvent.options.waitingTime() || count % 10 == 0 || count <= 5) {
-                oxEvent.sendEventMessage(MessagesConfiguration.eventStartCountdownMessage.replace("%seconds%", count + ""));
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                String message = MessagesConfiguration.eventStartCountdownMessage
+                        .replace("%time_remaining%", String.valueOf(count))
+                        .replace("%current_players%", String.valueOf(oxEvent.getEventPlayers().size() - 1))
+                        .replace("%required_players%", String.valueOf(oxEvent.options.playerLimit()));
+
+                player.sendActionBar(MiniMessage.miniMessage().deserialize(message));
             }
 
         }, oxEvent::nextPhase);
@@ -23,5 +31,11 @@ public class WaitingPhase extends EventPhase {
     @Override
     protected void start() {
         countdown.start();
+    }
+
+
+    @Override
+    protected void end() {
+        if (countdown != null && !countdown.isCancelled()) countdown.cancel();
     }
 }

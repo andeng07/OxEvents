@@ -1,0 +1,39 @@
+time-limit: 180
+
+locations:
+  # Location where the player is teleported when the parkour event starts.
+  spawn:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
+
+  # Where the player will be teleported after the parkour event ends.
+  return:
+    world: world
+    x: 0.5
+    y: 10.0
+    z: 0.5
+    yaw: 0
+    pitch: 0
+
+rewards:
+  vip_kit:
+    name: "<gold><bold>VIP Kit</bold></gold>"
+    commands:
+      - "give %player% diamond_sword 1"
+      - "say %player% has claimed the VIP Kit!"
+
+  gold_kit:
+    name: "<yellow>Gold Kit</yellow>"
+    commands:
+      - "give %player% golden_apple 3"
+      - "say %player% is now shining in gold!"
+
+  celebration:
+    name: "<gradient:#ff0000:#ffff00>Firework Blast</gradient>"
+    commands:
+      - "summon firework_rocket %player%"
+      - "say <white>%player%</white> <aqua>just launched fireworks!"

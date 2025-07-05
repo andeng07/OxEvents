@@ -14,17 +14,21 @@ import java.util.UUID;
 
 public class QuestionPhase extends EventPhase {
 
+    private EventPlayer winner;
+
     private final TriviaEvent triviaEvent;
+    private final TriviaEventSettings settings;
     private final List<Question> questions;
 
     private Countdown countdown;
     private int questionIndex = -1;
     private QuestionRound currentQuestion;
 
-    public QuestionPhase(JavaPlugin plugin, TriviaEvent oxEvent, List<Question> questions) {
+    public QuestionPhase(JavaPlugin plugin, TriviaEvent oxEvent, TriviaEventSettings settings) {
         super(plugin, oxEvent);
         this.triviaEvent = oxEvent;
-        this.questions = questions;
+        this.settings = settings;
+        this.questions = settings.questions();
 
         setListeners(List.of(new QuestionPhaseListener(this)));
     }
@@ -37,9 +41,19 @@ public class QuestionPhase extends EventPhase {
 
     @Override
     protected void end() {
-        if (countdown != null) {
+        if (countdown != null && countdown.isCancelled()) {
             countdown.cancel();
         }
+
+        if (winner != null) {
+            rewardWinner(winner);
+        }
+
+        oxEvent.sendEventMessage(MessagesConfiguration.oxEndMessage);
+
+        String winnerMessage = MessagesConfiguration.playerWinMessage.replace("%winners%", winner != null ? winner.asPlayer().getName() : "No one");
+
+        oxEvent.sendEventMessage(winnerMessage);
     }
 
     public QuestionRound getCurrentQuestionRound() {
@@ -61,8 +75,8 @@ public class QuestionPhase extends EventPhase {
                 .filter(player -> player.getState() == EventPlayer.State.ALIVE)
                 .toList();
 
-        if (isLastQuestion() /*|| alivePlayers.size() <= 1*/) {
-            triviaEvent.setWinner(alivePlayers.isEmpty() ? null : alivePlayers.getFirst());
+        if (isLastQuestion() || alivePlayers.size() <= 1) {
+            setWinner(alivePlayers.isEmpty() ? null : alivePlayers.getFirst());
             oxEvent.nextPhase();
             return;
         }
@@ -77,11 +91,9 @@ public class QuestionPhase extends EventPhase {
                 plugin,
                 currentQuestion.getQuestion().duration(),
                 count -> {
-                    if (count == currentQuestion.getQuestion().duration() || count % 10 == 0 || count <= 5) {
-                        String message = MessagesConfiguration.oxAnswerRevealCountdownMessage
-                                .replace("%seconds%", String.valueOf(count));
-                        oxEvent.sendEventMessage(message);
-                    }
+                    String message = MessagesConfiguration.oxAnswerRevealCountdownMessage
+                            .replace("%time_remaining%", String.valueOf(count));
+                    oxEvent.sendActionBar(message);
                 },
                 this::onCountdownFinish
         );
@@ -116,13 +128,28 @@ public class QuestionPhase extends EventPhase {
                 .filter(player -> player.getState() == EventPlayer.State.ALIVE).count();
 
         String message = MessagesConfiguration.oxAnswerRevealMessage
-                .replace("%answer%", currentQuestion.getQuestion().answer())
-                .replace("%correct%", String.valueOf(correctCount))
-                .replace("%wrong%", String.valueOf(wrongCount))
-                .replace("%alive%", String.valueOf(remainingCount));
+                .replace("%correct_answer%", currentQuestion.getQuestion().answer())
+                .replace("%correct_count%", String.valueOf(correctCount))
+                .replace("%wrong_count%", String.valueOf(wrongCount))
+                .replace("%remaining_players%", String.valueOf(remainingCount));
 
         oxEvent.sendEventMessage(message);
 
         nextQuestion(); // Go to next round
     }
+
+    public void setWinner(EventPlayer eventPlayer) {
+        if (winner != null) throw new IllegalStateException("Events > Winner already exist.");
+
+        winner = eventPlayer;
+    }
+
+    private void rewardWinner(EventPlayer eventPlayer) {
+        Player player = eventPlayer.asPlayer();
+
+        if (player == null) return;
+
+        settings.reward().apply(player);
+    }
+
 }

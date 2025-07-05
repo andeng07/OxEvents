@@ -1,11 +1,12 @@
 package me.centauri07.ox.command;
 
+import me.centauri07.ox.config.*;
+import me.centauri07.ox.event.EventPlayer;
 import me.centauri07.ox.event.Options;
 import me.centauri07.ox.event.OxEvent;
+import me.centauri07.ox.event.blockhunt.BlockHuntEvent;
 import me.centauri07.ox.event.parkour.ParkourEvent;
-import me.centauri07.ox.event.parkour.ParkourEventSettings;
 import me.centauri07.ox.event.trivia.TriviaEvent;
-import me.centauri07.ox.event.trivia.TriviaEventSettings;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,13 +24,23 @@ public class EventCommand implements CommandExecutor {
 
     private final JavaPlugin plugin;
 
-    private final TriviaEventSettings triviaEventSettings;
-    private final ParkourEventSettings parkourEventSettings;
+    private final TriviaEventConfig triviaEventSettings;
+    private final ParkourEventConfig parkourEventSettings;
+    private final BlockHuntConfig blockHuntEventSettings;
+    private final BlockHuntDataStore blockHuntDataStore;
 
-    public EventCommand(JavaPlugin plugin, TriviaEventSettings triviaEventSettings, ParkourEventSettings parkourEventSettings) {
+    public EventCommand(
+            JavaPlugin plugin,
+            TriviaEventConfig triviaEventConfig,
+            ParkourEventConfig parkourEventConfig,
+            BlockHuntConfig blockHuntConfig,
+            BlockHuntDataStore blockHuntDataStore
+    ) {
         this.plugin = plugin;
-        this.triviaEventSettings = triviaEventSettings;
-        this.parkourEventSettings = parkourEventSettings;
+        this.triviaEventSettings = triviaEventConfig;
+        this.parkourEventSettings = parkourEventConfig;
+        this.blockHuntEventSettings = blockHuntConfig;
+        this.blockHuntDataStore = blockHuntDataStore;
     }
 
     @Override
@@ -43,7 +54,7 @@ public class EventCommand implements CommandExecutor {
 
         String eventTypesEnumerated = Arrays.stream(OxEvent.Type.values()).map(event -> event.id).collect(Collectors.joining(" | "));
 
-        String usage = "<red>Correct usage: /event <start | join> <" + eventTypesEnumerated + "> <player_limit> <waiting_time>";
+        String usage = "<red>Correct usage: /event <start | join | dolacz | leave | opusc | stop> <" + eventTypesEnumerated + "> <player_limit> <waiting_time>";
 
         if (args.length == 0) {
             sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
@@ -112,15 +123,14 @@ public class EventCommand implements CommandExecutor {
                 Options options = new Options(type.get(), playerLimit, waitingTime);
 
                 switch (type.get()) {
-                    case OxEvent.Type.TRIVIA -> OxEvent.currentEvent = new TriviaEvent(plugin, options, triviaEventSettings);
+                    case OxEvent.Type.TRIVIA ->
+                            OxEvent.currentEvent = new TriviaEvent(plugin, options, triviaEventSettings.triviaEventSettings);
 
-                    case OxEvent.Type.PARKOUR -> OxEvent.currentEvent = new ParkourEvent(plugin, options, parkourEventSettings);
+                    case OxEvent.Type.PARKOUR ->
+                            OxEvent.currentEvent = new ParkourEvent(plugin, options, parkourEventSettings.parkourEventSettings);
 
-                    case OxEvent.Type.BLOCK_HUNT -> {
-                        sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Not yet implemented")); // TODO
-
-                        return true;
-                    }
+                    case OxEvent.Type.BLOCK_HUNT ->
+                            OxEvent.currentEvent = new BlockHuntEvent(plugin, options, blockHuntEventSettings.settings, blockHuntDataStore);
 
                     default -> sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
                 }
@@ -130,10 +140,11 @@ public class EventCommand implements CommandExecutor {
                 if (currentEvent != null) {
                     currentEvent.nextPhase();
 
-                    currentEvent.addPlayer(player);
+                    currentEvent.addPlayer(player, EventPlayer.State.ELIMINATED);
                 }
             }
-            case "join" -> {
+
+            case "join", "dolacz" -> {
                 if (args.length != 1) {
                     sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
 
@@ -148,9 +159,61 @@ public class EventCommand implements CommandExecutor {
                     return true;
                 }
 
-                OxEvent.currentEvent.addPlayer(player);
+                currentEvent.addPlayer(player, EventPlayer.State.ALIVE);
             }
-            default -> sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Correct usage: /event <start | join> [" + eventTypesEnumerated + "]"));
+
+            case "leave", "opusc" -> {
+                if (args.length != 1) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
+
+                    return true;
+                }
+
+                OxEvent currentEvent = OxEvent.currentEvent;
+
+                if (currentEvent == null) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>There are no current active event"));
+
+                    return true;
+                }
+
+                if (!currentEvent.isPlayer(player)) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You are not a member of an event"));
+                    return true;
+                }
+
+                currentEvent.removePlayer(player);
+
+                player.sendMessage(MiniMessage.miniMessage().deserialize(MessagesConfiguration.eventLeaveMessage));
+            }
+
+            case "stop" -> {
+                if (args.length != 1) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
+
+                    return true;
+                }
+
+                if (!player.hasPermission("event.stop")) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You don't have permission to execute this command!"));
+
+                    return true;
+                }
+
+                OxEvent currentEvent = OxEvent.currentEvent;
+
+                if (currentEvent == null) {
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>There are no current active event"));
+
+                    return true;
+                }
+
+                currentEvent.forceStop();
+
+            }
+
+            default ->
+                    sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Correct usage: /event <start | join> [" + eventTypesEnumerated + "]"));
         }
 
 

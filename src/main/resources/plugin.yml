@@ -7,5 +7,14 @@ libraries:
   - net.kyori:adventure-text-minimessage:4.22.0
 commands:
   event:
-    description: Ox, Parkour, Hidden Blocks Event
-    usage: /event <start|join> <type> <player_limit> <waiting_time>
+    description: Start or join an active event (Trivia, Parkour, Block Hunt).
+    usage: |
+      /event start <trivia|parkour|block_hunt> <player_limit> <waiting_time>
+      /event <join | dolacz>
+      /event <leave | opusc>
+  eventsetup:
+    description: Setup parkour and block hunt event locations and hidden rewards.
+    usage: |
+      /eventsetup <parkour|block_hunt> <spawn|return>
+      /eventsetup parkour <start|end>
+      /eventsetup block_hunt hide <rewardKey>

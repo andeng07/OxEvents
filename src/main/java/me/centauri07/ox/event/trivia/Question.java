@@ -114,27 +114,26 @@ public record Question(String question, List<String> choices, String answer, int
 
         switch (type) {
             case MULTIPLE_CHOICE -> {
-                builder.append(MessagesConfiguration.oxMultipleChoiceQuestionFormat.replace("%question%", question)).append("\n");
+                builder.append(MessagesConfiguration.oxMultipleChoiceQuestionFormat.replace("%question_text%", question)).append("\n");
                 char letter = 'A';
                 for (String choice : choices) {
                     builder.append(MessagesConfiguration.oxMultipleChoiceOptionFormat
-                            .replace("%option_letter%", String.valueOf(letter))
-                            .replace("%option_text%", choice)).append("\n");
+                            .replace("%choice_letter%", String.valueOf(letter))
+                            .replace("%choice_text%", choice)).append("\n");
                     letter++;
                 }
             }
             case TRUE_OR_FALSE -> {
-                builder.append(MessagesConfiguration.oxTrueFalseQuestionFormat.replace("%question%", question)).append("\n");
-                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%option_letter%", "A").replace("%option_text%", "True")).append("\n");
-                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%option_letter%", "B").replace("%option_text%", "False")).append("\n");
+                builder.append(MessagesConfiguration.oxTrueFalseQuestionFormat.replace("%question_text%", question)).append("\n");
+                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "A").replace("%choice_text%", "True")).append("\n");
+                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "B").replace("%choice_text%", "False")).append("\n");
             }
-            case IDENTIFICATION -> builder.append(MessagesConfiguration.oxIdentificationQuestionFormat.replace("%question%", question));
+            case IDENTIFICATION -> builder.append(MessagesConfiguration.oxIdentificationQuestionFormat.replace("%question_text%", question));
         }
 
         return builder.toString().trim();
     }
 
-    @Override
     public String answer() {
         if (answer == null) return null;
         return switch (type) {

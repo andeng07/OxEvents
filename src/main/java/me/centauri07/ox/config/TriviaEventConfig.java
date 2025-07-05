@@ -1,5 +1,6 @@
 package me.centauri07.ox.config;
 
+import me.centauri07.ox.event.EventReward;
 import me.centauri07.ox.event.trivia.Question;
 import me.centauri07.ox.event.trivia.TriviaEventSettings;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +15,14 @@ public class TriviaEventConfig extends Configuration {
 
     @Override
     protected void setup() {
-        triviaEventSettings = new TriviaEventSettings(Question.fromConfigList(configuration));
+        triviaEventSettings = new TriviaEventSettings(
+                Question.fromConfigList(configuration),
+                EventReward.fromConfig("reward", configuration.getConfigurationSection("reward"))
+        );
+    }
+
+    @Override
+    public void save() {
+        super.save();
     }
 }

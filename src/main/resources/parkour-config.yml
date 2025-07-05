@@ -1,12 +1,12 @@
-parkour:
-  # The winner count for the parkour event
-  winner-count: 1
+# The winner count for the parkour event
+winner-count: 1
 
-  # The time limit for the parkour event
-  time-limit: 180
+# The time limit for the parkour event
+time-limit: 180
 
+locations:
   # Location where the player is teleported when the parkour event starts.
-  location:
+  spawn:
     world: world
     x: 0.5
     y: 10.0
@@ -40,3 +40,12 @@ parkour:
     z: 0.5
     yaw: 0
     pitch: 0
+
+reward:
+  name: "<green><bold>Parkour Master</bold></green>"
+  commands:
+    - "give %player% emerald 5"
+    - "say <aqua>%player%</aqua> conquered the <green>Parkour Challenge</green>!"
+
+blocked-commands:
+  - fly

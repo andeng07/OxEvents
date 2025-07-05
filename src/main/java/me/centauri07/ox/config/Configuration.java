@@ -12,6 +12,8 @@ public abstract class Configuration {
     private final JavaPlugin plugin;
     private final String fileName;
 
+    protected File file;
+
     protected YamlConfiguration configuration;
 
     public Configuration(JavaPlugin plugin, String fileName) {
@@ -20,7 +22,7 @@ public abstract class Configuration {
     }
 
     public final void load() {
-        File file = new File(plugin.getDataFolder(), fileName + ".yml");
+        file = new File(plugin.getDataFolder(), fileName + ".yml");
 
         if (!file.exists()) {
             plugin.saveResource(fileName + ".yml", false);
@@ -39,4 +41,5 @@ public abstract class Configuration {
 
     protected abstract void setup();
 
+    public void save() { }
 }

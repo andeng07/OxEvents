@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class ParkourPhase extends EventPhase {
     private final ParkourEventSettings settings;
@@ -27,11 +28,7 @@ public class ParkourPhase extends EventPhase {
         setListeners(List.of(new ParkourPhaseListener(settings)));
 
         countdown = new Countdown(plugin, settings.timeLimit(),
-                (time) -> {
-                    if (time % 10 == 0 && time < 5) {
-                        oxEvent.sendEventMessage(MessagesConfiguration.eventTimeRemainingMessage.replace("%time%", time + ""));
-                    }
-                },
+                (time) -> oxEvent.sendActionBar(MessagesConfiguration.eventTimeRemainingMessage.replace("%time_remaining%", time + "")),
                 oxEvent::nextPhase /* end game */);
     }
 
@@ -43,6 +40,11 @@ public class ParkourPhase extends EventPhase {
             Player player = eventPlayer.asPlayer();
 
             if (player != null) {
+                player.setAllowFlight(false);
+                player.setFlying(false);
+
+                player.clearActivePotionEffects();
+
                 player.teleport(settings.parkourLocation().asBukkitLocation());
             }
         });
@@ -52,24 +54,32 @@ public class ParkourPhase extends EventPhase {
 
     @Override
     protected void end() {
-        countdown.cancel();
+        if (countdown != null && !countdown.isCancelled()) countdown.cancel();
 
-        oxEvent.getEventPlayers().forEach(eventPlayer -> {
+        List<EventPlayer> winners = finished.stream().map(oxEvent::getEventPlayer).toList();
+
+        winners.forEach(eventPlayer -> {
             Player player = eventPlayer.asPlayer();
 
-            if (player != null) {
-                player.teleport(settings.returnLocation().asBukkitLocation());
-            }
+            if (player == null) return;
+
+            settings.reward().apply(player);
         });
 
         started.clear();
         finished.clear();
 
-        super.end();
+        oxEvent.sendEventMessage(MessagesConfiguration.parkourEndMessage);
+
+        oxEvent.sendEventMessage(
+                MessagesConfiguration.playerWinMessage.replace("%winners%", winners.isEmpty() ? "No one" :
+                        winners.stream()
+                                .map(winner -> winner.asPlayer().getName())
+                                .collect(Collectors.joining(", "))));
     }
 
     public boolean isStarted(EventPlayer eventPlayer) {
-        return started.contains(eventPlayer.getUniqueId()) || eventPlayer.getState() == EventPlayer.State.ELIMINATED;
+        return started.contains(eventPlayer.getUniqueId());
     }
 
     public void startParkour(EventPlayer eventPlayer) {
@@ -85,11 +95,11 @@ public class ParkourPhase extends EventPhase {
     public void finishParkour(EventPlayer eventPlayer) {
         if (!isStarted(eventPlayer)) return;
 
+        finished.add(eventPlayer.getUniqueId());
+
         if (finished.size() >= settings.winnerCount()) {
             oxEvent.nextPhase();
         }
-
-        finished.add(eventPlayer.getUniqueId());
     }
 
     public void eliminateParkour(EventPlayer eventPlayer) {

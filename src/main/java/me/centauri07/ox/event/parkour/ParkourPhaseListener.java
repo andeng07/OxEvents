@@ -7,7 +7,10 @@ import me.centauri07.ox.event.OxEvent;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 public class ParkourPhaseListener extends EventPhaseListener {
 
@@ -39,6 +42,8 @@ public class ParkourPhaseListener extends EventPhaseListener {
 
         if (eventPlayer == null) return;
 
+        if (eventPlayer.getState() == EventPlayer.State.ELIMINATED) { return; }
+
         if (block.getX() == (int) settings.parkourStart().x() &&
                 block.getY() == (int) settings.parkourStart().y() &&
                 block.getZ() == (int) settings.parkourStart().z()) {
@@ -65,14 +70,77 @@ public class ParkourPhaseListener extends EventPhaseListener {
                 return;
             }
 
-            parkourPhase.finishParkour(eventPlayer);
+            if (parkourPhase.isParkourFinished(eventPlayer)) {
+                return;
+            }
 
             parkourEvent.sendEventMessage(MessagesConfiguration.parkourCompletedMessage
-                    .replace("%player%", event.getPlayer().getName())
-                    .replace("%current%", parkourPhase.getFinishers().size() + "")
-                    .replace("%required%", settings.winnerCount() + "")
+                    .replace("%player_name%", event.getPlayer().getName())
+                    .replace("%finished_count%", parkourPhase.getFinishers().size() + 1 + "")
+                    .replace("%required_finishers%", settings.winnerCount() + "")
             );
+
+            parkourPhase.finishParkour(eventPlayer);
         }
+    }
+
+    @EventHandler
+    public void onConsumeEvent(PlayerItemConsumeEvent event) {
+        if (OxEvent.currentEvent == null) return;
+
+        if (!(OxEvent.currentEvent instanceof ParkourEvent parkourEvent)) return;
+
+        if (parkourEvent.getCurrentPhase() == null) return;
+
+        if (!(parkourEvent.getCurrentPhase() instanceof ParkourPhase parkourPhase)) return;
+
+        EventPlayer eventPlayer = parkourEvent.getEventPlayer(event.getPlayer());
+
+        if (eventPlayer == null) return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void dispatchCommandEvent(PlayerCommandPreprocessEvent event) {
+        if (OxEvent.currentEvent == null) return;
+
+        if (!(OxEvent.currentEvent instanceof ParkourEvent parkourEvent)) return;
+
+        if (parkourEvent.getCurrentPhase() == null) return;
+
+        if (!(parkourEvent.getCurrentPhase() instanceof ParkourPhase parkourPhase)) return;
+
+        EventPlayer eventPlayer = parkourEvent.getEventPlayer(event.getPlayer());
+
+        if (eventPlayer == null) return;
+
+        if (settings.blockedCommands().stream()
+                .map(blockedCommand -> "/" + blockedCommand)
+                .noneMatch(blockedCommand -> blockedCommand.equalsIgnoreCase(event.getMessage())))
+            return;
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onFly(PlayerToggleFlightEvent event) {
+        if (OxEvent.currentEvent == null) return;
+
+        if (!(OxEvent.currentEvent instanceof ParkourEvent parkourEvent)) return;
+
+        if (parkourEvent.getCurrentPhase() == null) return;
+
+        if (!(parkourEvent.getCurrentPhase() instanceof ParkourPhase parkourPhase)) return;
+
+        EventPlayer eventPlayer = parkourEvent.getEventPlayer(event.getPlayer());
+
+        if (eventPlayer == null) return;
+
+        event.getPlayer().setAllowFlight(false);
+        event.getPlayer().setFlying(false);
+
+        event.setCancelled(true);
     }
 
 }

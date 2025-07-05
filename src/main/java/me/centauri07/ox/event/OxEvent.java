@@ -1,9 +1,12 @@
 package me.centauri07.ox.event;
 
 import me.centauri07.ox.config.MessagesConfiguration;
+import me.centauri07.ox.utility.Countdown;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 public abstract class OxEvent {
+
+    private final JavaPlugin plugin;
 
     public static OxEvent currentEvent = null;
 
@@ -22,28 +27,68 @@ public abstract class OxEvent {
 
     protected EventPhase currentPhase = null;
 
-    public OxEvent(Options options) {
+    public OxEvent(JavaPlugin plugin, Options options) {
+        this.plugin = plugin;
         this.options = options;
+
+        start();
     }
 
     public final void sendEventMessage(String message) {
         Component prefix = MiniMessage.miniMessage()
-                .deserialize(MessagesConfiguration.prefix.replace("%event_name%", options.type().requestName));
+                .deserialize(MessagesConfiguration.prefix.replace("%event%", options.type().requestName));
 
         players.forEach(eventPlayer -> {
-                Player player = eventPlayer.asPlayer();
+                    Player player = eventPlayer.asPlayer();
 
-                if (player != null) {
-                    String messageParsed = message
-                            .replace("%player_name%", player.getName());
+                    if (player != null) {
+                        String messageParsed = message
+                                .replace("%player_name%", player.getName());
 
-                    player.sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
+                        player.sendMessage(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
+                    }
                 }
-            }
         );
     }
 
-    public final boolean addPlayer(Player player) {
+    public final void sendEventTitle(String message) {
+        Component prefix = MiniMessage.miniMessage()
+                .deserialize(MessagesConfiguration.prefix.replace("%event%", options.type().requestName));
+
+        players.forEach(eventPlayer -> {
+                    Player player = eventPlayer.asPlayer();
+
+                    if (player != null) {
+                        String messageParsed = message
+                                .replace("%player_name%", player.getName());
+
+
+                        player.showTitle(Title.title(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)), Component.empty()));
+                    }
+                }
+        );
+    }
+
+    public final void sendActionBar(String message) {
+
+        Component prefix = MiniMessage.miniMessage()
+                .deserialize(MessagesConfiguration.prefix.replace("%event%", options.type().requestName));
+
+        players.forEach(eventPlayer -> {
+                    Player player = eventPlayer.asPlayer();
+
+                    if (player != null) {
+                        String messageParsed = message
+                                .replace("%player_name%", player.getName());
+
+                        player.sendActionBar(prefix.append(MiniMessage.miniMessage().deserialize(messageParsed)));
+                    }
+                }
+        );
+    }
+
+
+    public final boolean addPlayer(Player player, EventPlayer.State state) {
         if (!canJoin()) {
             String message = MessagesConfiguration.eventAlreadyStartedMessage.replace("%player%", player.getName());
 
@@ -68,13 +113,21 @@ public abstract class OxEvent {
             return false;
         }
 
-        EventPlayer eventPlayer = new EventPlayer(player.getUniqueId(), EventPlayer.State.ALIVE);
+        EventPlayer eventPlayer = new EventPlayer(player.getUniqueId(), state);
 
         players.add(eventPlayer);
 
-        sendEventMessage(MessagesConfiguration.eventJoinMessage);
+        sendEventMessage(
+                MessagesConfiguration.eventJoinMessage
+        );
 
         return true;
+    }
+
+    public void removePlayer(Player player) {
+        if (!isPlayer(player)) return;
+
+        players.removeIf(eventPlayer -> eventPlayer.getUniqueId() == player.getUniqueId());
     }
 
     public final EventPlayer getEventPlayer(Player player) {
@@ -107,7 +160,9 @@ public abstract class OxEvent {
             if (currentIndex >= 0 && currentIndex + 1 < phases.size()) {
                 currentPhase = phases.get(currentIndex + 1);
             } else {
-                terminate();
+                new Countdown(plugin, 5, tick ->
+                        sendActionBar(MessagesConfiguration.eventTerminateCountdown.replace("%time_remaining%", String.valueOf(tick))
+                        ), this::terminate).start();
                 return;
             }
         } else {
@@ -120,13 +175,23 @@ public abstract class OxEvent {
     }
 
     public final void terminate() {
+        end();
+
         players.clear();
         phases = null;
         currentPhase = null;
 
-        end();
-
         OxEvent.currentEvent = null;
+    }
+
+    public final void forceStop() {
+        if (currentPhase != null && currentPhase != phases.getLast()) {
+            currentPhase.terminate();
+
+            currentPhase = phases.getLast();
+        }
+
+        nextPhase();
     }
 
     public boolean canJoin() {
@@ -141,9 +206,11 @@ public abstract class OxEvent {
         phases = Arrays.stream(eventPhases).toList();
     }
 
-    public void start() {}
+    public void start() {
+    }
 
-    public void end() {}
+    public void end() {
+    }
 
     public enum Type {
         TRIVIA("ox", "Ox Event"),

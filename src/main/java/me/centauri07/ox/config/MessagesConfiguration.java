@@ -15,6 +15,8 @@ public class MessagesConfiguration extends Configuration {
     public static String prefix;
 
     // Event messages
+    public static String waitingActionBar;
+
     /** Countdown before the event officially begins (%seconds%) */
     public static String eventStartCountdownMessage;
 
@@ -39,8 +41,13 @@ public class MessagesConfiguration extends Configuration {
     /** Victory message when one or more players win (%winners%) */
     public static String playerWinMessage;
 
+    public static String eventTerminateCountdown;
+
+    public static String eventLeaveMessage;
+
     // Trivia (OX) messages
     /** Introduction message when Trivia starts */
+    public static String oxInitializeMessage;
     public static String oxStartMessage;
 
     /** Feedback when player submits an answer (%answer%) */
@@ -78,7 +85,10 @@ public class MessagesConfiguration extends Configuration {
     /** Summary message after answer reveal (%answer%, %correct%, %wrong%, %alive%) */
     public static String oxAnswerRevealMessage;
 
+    public static String oxEndMessage;
+
     // Parkour messages
+    public static String parkourInitializeMessage;
     /** Introduction message when Parkour starts */
     public static String parkourStartMessage;
 
@@ -94,6 +104,19 @@ public class MessagesConfiguration extends Configuration {
     /** Message when player tries to finish without starting */
     public static String parkourInvalidFinishAttempt;
 
+    /** Message shown when the event ends and players are being returned to spawn */
+    public static String parkourReturnCountdownMessage;
+
+    public static String parkourEndMessage;
+
+    // Block hunt (hidden blocks) messages
+    /** */
+    public static String hiddenBlocksInitializeMessage;
+    public static String hiddenBlocksStartMessage;
+    public static String hiddenBlocksFoundReward;
+
+    public static String hiddenBlocksEndMessage;
+
     public MessagesConfiguration(JavaPlugin plugin) {
         super(plugin, "messages");
     }
@@ -103,6 +126,7 @@ public class MessagesConfiguration extends Configuration {
         prefix = configuration.getString("prefix");
 
         // Event messages
+        waitingActionBar = configuration.getString("waiting-action-bar");
         eventStartCountdownMessage = configuration.getString("event.start-countdown");
         eventTimeRemainingMessage = configuration.getString("event.time-remaining");
         eventFullMessage = configuration.getString("event.full");
@@ -111,8 +135,11 @@ public class MessagesConfiguration extends Configuration {
         playerAlreadyInEventMessage = configuration.getString("event.already-in");
         playerEliminatedMessage = configuration.getString("event.eliminated");
         playerWinMessage = configuration.getString("event.win");
+        eventTerminateCountdown = configuration.getString("event.terminate-countdown");
+        eventLeaveMessage = configuration.getString("event.leave");
 
         // OX (Trivia) messages
+        oxInitializeMessage = configuration.getString("ox.initialize-message");
         oxStartMessage = configuration.getString("ox.start-message");
         answerMessage = configuration.getString("ox.answer");
         alreadyAnsweredMessage = configuration.getString("ox.already-answered");
@@ -130,11 +157,25 @@ public class MessagesConfiguration extends Configuration {
         oxAnswerRevealCountdownMessage = configuration.getString("ox.answer-reveal.countdown");
         oxAnswerRevealMessage = configuration.getString("ox.answer-reveal.message");
 
+        oxEndMessage = configuration.getString("ox.end-message");
+
         // Parkour messages
+        parkourInitializeMessage = configuration.getString("parkour.initialize-message");
         parkourStartMessage = configuration.getString("parkour.start-message");
         parkourStartCourseMessage = configuration.getString("parkour.start-course");
         parkourCompletedMessage = configuration.getString("parkour.completed");
         parkourAlreadyStarted = configuration.getString("parkour.already-started");
         parkourInvalidFinishAttempt = configuration.getString("parkour.invalid-finish-attempt");
+        parkourReturnCountdownMessage = configuration.getString("parkour.return-countdown");
+
+        parkourEndMessage = configuration.getString("parkour.end-message");
+
+        // Hidden blocks
+        hiddenBlocksInitializeMessage = configuration.getString("hidden-blocks.initialize-message");
+        hiddenBlocksStartMessage = configuration.getString("hidden-blocks.start-message");
+        hiddenBlocksFoundReward = configuration.getString("hidden-blocks.found-reward");
+        parkourReturnCountdownMessage = configuration.getString("hidden-blocks.return-countdown");
+
+        hiddenBlocksEndMessage = configuration.getString("hidden-blocks.end-message");
     }
 }

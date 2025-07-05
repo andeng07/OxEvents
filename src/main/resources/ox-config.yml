@@ -22,3 +22,10 @@ questions:
     # No choices for identification
     answer: "Alexander Graham Bell"
     duration: 45
+
+reward:
+  name: "<gold><bold>Trivia Champion</bold></gold>"
+  commands:
+    - "give %player% experience_bottle 16"
+    - "say <yellow>%player%</yellow> has proven their knowledge in <gold>Trivia!</gold>"
+    - "title %player% title <gold>Trivia Master"
