@@ -1,8 +1,6 @@
 package me.centauri07.ox.command;
 
-import me.centauri07.ox.config.BlockHuntConfig;
-import me.centauri07.ox.config.BlockHuntDataStore;
-import me.centauri07.ox.config.ParkourEventConfig;
+import me.centauri07.ox.config.*;
 import me.centauri07.ox.event.OxEvent;
 import me.centauri07.ox.event.blockhunt.BlockData;
 import me.centauri07.ox.event.blockhunt.BlockHuntEventSettings;
@@ -19,11 +17,21 @@ import org.jetbrains.annotations.NotNull;
 
 public class EventSetupCommand implements CommandExecutor {
 
+    private final MessagesConfiguration messagesConfiguration;
+    private final TriviaEventConfig triviaEventConfig;
     private final ParkourEventConfig parkourEventConfig;
     private final BlockHuntConfig blockHuntConfig;
     private final BlockHuntDataStore dataStore;
 
-    public EventSetupCommand(ParkourEventConfig parkourEventConfig, BlockHuntConfig blockHuntConfig, BlockHuntDataStore dataStore) {
+    public EventSetupCommand(
+            MessagesConfiguration messagesConfiguration,
+            TriviaEventConfig triviaEventConfig,
+            ParkourEventConfig parkourEventConfig,
+            BlockHuntConfig blockHuntConfig,
+            BlockHuntDataStore dataStore
+    ) {
+        this.messagesConfiguration = messagesConfiguration;
+        this.triviaEventConfig = triviaEventConfig;
         this.parkourEventConfig = parkourEventConfig;
         this.blockHuntConfig = blockHuntConfig;
         this.dataStore = dataStore;
@@ -177,6 +185,19 @@ public class EventSetupCommand implements CommandExecutor {
 
                         return true;
                     }
+
+                    case "config_reload" -> {
+                        messagesConfiguration.load();
+                        triviaEventConfig.load();
+                        parkourEventConfig.load();
+                        blockHuntConfig.load();
+
+                        player.sendMessage(MiniMessage.miniMessage().deserialize(
+                                "<green>✔ Config has been successfully reloaded.</green>"
+                        ));
+                        return true;
+                    }
+
                     default -> sender.sendMessage(MiniMessage.miniMessage().deserialize(usage));
                 }
             }

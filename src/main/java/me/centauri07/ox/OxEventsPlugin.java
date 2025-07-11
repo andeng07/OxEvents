@@ -50,10 +50,12 @@ public class OxEventsPlugin extends JavaPlugin {
 
         Bukkit.getPluginCommand("eventsetup").setExecutor(
                 new EventSetupCommand(
+                        messagesConfiguration,
+                        triviaEventConfig,
                         parkourEventConfig,
                         blockHuntConfig,
                         blockHuntDataStore
-                )
+                    )
         );
 
         Bukkit.getPluginCommand("eventsetup").setTabCompleter(
