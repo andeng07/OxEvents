@@ -145,6 +145,10 @@ public abstract class OxEvent {
         return players;
     }
 
+    public final List<EventPlayer> getEventPlayers(Predicate<EventPlayer> predicate) {
+        return players.stream().filter(predicate).toList();
+    }
+
     public final boolean isPlayer(Player player) {
         return players.stream().anyMatch(eventPlayer -> eventPlayer.getUniqueId() == player.getUniqueId());
     }
