@@ -29,7 +29,7 @@ public record Question(String question, List<String> choices, String answer, int
                 throw new IllegalArgumentException("Choices are required for multiple choice.");
             }
         } else if (type == Type.TRUE_OR_FALSE) {
-            choices = List.of("True", "False");
+            choices = List.of("Tak", "Nie");
         }
 
         return new Question(question, choices, answer, duration, type);
@@ -82,8 +82,8 @@ public record Question(String question, List<String> choices, String answer, int
             }
 
             case TRUE_OR_FALSE -> {
-                if (!answer.equalsIgnoreCase("True") && !answer.equalsIgnoreCase("False")) {
-                    throw new IllegalArgumentException("True/False answers must be either 'True' or 'False'.");
+                if (!answer.equalsIgnoreCase("Tak") && !answer.equalsIgnoreCase("Nie")) {
+                    throw new IllegalArgumentException("Tak/Nie answers must be either 'Tak' or 'Nie'.");
                 }
             }
 
@@ -125,8 +125,8 @@ public record Question(String question, List<String> choices, String answer, int
             }
             case TRUE_OR_FALSE -> {
                 builder.append(MessagesConfiguration.oxTrueFalseQuestionFormat.replace("%question_text%", question)).append("\n");
-                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "A").replace("%choice_text%", "True")).append("\n");
-                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "B").replace("%choice_text%", "False")).append("\n");
+                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "A").replace("%choice_text%", "Tak")).append("\n");
+                builder.append(MessagesConfiguration.oxTrueFalseOptionFormat.replace("%choice_letter%", "B").replace("%choice_text%", "Nie")).append("\n");
             }
             case IDENTIFICATION -> builder.append(MessagesConfiguration.oxIdentificationQuestionFormat.replace("%question_text%", question));
         }
