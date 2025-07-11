@@ -26,7 +26,7 @@ public class EventSetupTabCompleter implements TabCompleter {
                                                 @NotNull String alias,
                                                 @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("parkour", "block_hunt").stream()
+            return Arrays.asList("parkour", "block_hunt", "config_reload").stream()
                     .filter(opt -> opt.startsWith(args[0].toLowerCase()))
                     .collect(Collectors.toList());
         }
