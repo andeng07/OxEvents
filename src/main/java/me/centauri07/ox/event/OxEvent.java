@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public abstract class OxEvent {
 
@@ -97,7 +98,7 @@ public abstract class OxEvent {
             return false;
         }
 
-        if (players.size() >= options.playerLimit()) {
+        if (getEventPlayers(eventPlayer -> !eventPlayer.asPlayer().hasPermission("oxevent.admin")).size() >= options.playerLimit()) {
             String message = MessagesConfiguration.eventFullMessage.replace("%player%", player.getName());
 
             player.sendMessage(MiniMessage.miniMessage().deserialize(message));
@@ -113,11 +114,11 @@ public abstract class OxEvent {
             return false;
         }
 
-        EventPlayer eventPlayer = new EventPlayer(player.getUniqueId(), state);
+        EventPlayer eventPlayer = new EventPlayer(player.getUniqueId(), player.hasPermission("oxevent.admin") ? EventPlayer.State.ELIMINATED : EventPlayer.State.ALIVE);
 
         players.add(eventPlayer);
 
-        sendEventMessage(
+        player.sendMessage(
                 MessagesConfiguration.eventJoinMessage
         );
 

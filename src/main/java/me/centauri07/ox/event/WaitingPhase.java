@@ -19,7 +19,7 @@ public class WaitingPhase extends EventPhase {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 String message = MessagesConfiguration.eventStartCountdownMessage
                         .replace("%time_remaining%", String.valueOf(count))
-                        .replace("%current_players%", String.valueOf(oxEvent.getEventPlayers().size() - 1))
+                        .replace("%current_players%", String.valueOf(oxEvent.getEventPlayers(eventPlayer -> !eventPlayer.asPlayer().hasPermission("oxevent.admin")).size()))
                         .replace("%required_players%", String.valueOf(oxEvent.options.playerLimit()));
 
                 player.sendActionBar(MiniMessage.miniMessage().deserialize(message));
