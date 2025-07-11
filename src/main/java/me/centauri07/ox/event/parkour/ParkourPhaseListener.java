@@ -49,12 +49,12 @@ public class ParkourPhaseListener extends EventPhaseListener {
                 block.getZ() == (int) settings.parkourStart().z()) {
 
             if (parkourPhase.isStarted(eventPlayer)) {
-                parkourEvent.sendEventMessage(MessagesConfiguration.parkourAlreadyStarted);
+                event.getPlayer().sendMessage(MessagesConfiguration.parkourAlreadyStarted);
 
                 return;
             }
 
-            parkourEvent.sendEventMessage(MessagesConfiguration.parkourStartCourseMessage);
+            event.getPlayer().sendMessage(MessagesConfiguration.parkourStartCourseMessage);
             parkourPhase.startParkour(eventPlayer);
 
             return;
@@ -65,7 +65,7 @@ public class ParkourPhaseListener extends EventPhaseListener {
                 block.getZ() == (int) settings.parkourEnd().z()) {
 
             if (!parkourPhase.isStarted(eventPlayer)) {
-                parkourEvent.sendEventMessage(MessagesConfiguration.parkourInvalidFinishAttempt);
+                event.getPlayer().sendMessage(MessagesConfiguration.parkourInvalidFinishAttempt);
 
                 return;
             }
